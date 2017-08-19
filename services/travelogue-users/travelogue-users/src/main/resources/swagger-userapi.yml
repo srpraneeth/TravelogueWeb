@@ -1,0 +1,187 @@
+swagger: '2.0'
+info:
+  description: Users API
+  version: 1.0.0
+  title: Users API
+host: 'localhost:8110'
+basePath: /
+tags:
+  - name: UsersAPI
+    description: Users API
+schemes:
+  - http
+  - https
+paths:
+  /login:
+    post:
+      tags:
+        - Login User
+      summary: Login User
+      description: Login User API
+      operationId: LoginUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters: 
+        - in: body
+          name: login
+          schema:
+            $ref: '#/definitions/login'
+      responses:
+        201:
+          description: Success
+          headers:
+            Token:
+              description: Login Token Created
+              type: string
+          schema:
+            $ref: '#/definitions/user'
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        401:
+          description: Authentication Failed
+        403:
+          description: Forbidden (Account Locked)
+        500:
+          description: Server Vault
+    
+    delete:
+      tags:
+        - Logout User
+      summary: Logout User
+      description: Logout User API
+      operationId: LogoutUser
+      security:
+        - JWT: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        204:
+          description: Success
+        401:
+          description: Authentication Failed
+        500:
+          description: Server Vault
+  
+  /users:
+    post:
+      tags:
+        - Create User
+      summary: Create User
+      description: Create User API
+      operationId: CreateUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters: 
+        - in: body
+          name: user
+          schema:
+            $ref: '#/definitions/user'
+      responses:
+        201:
+          description: Success
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        401:
+          description: Authentication Failed
+        403:
+          description: Forbidden (Account Locked)
+        500:
+          description: Server Vault
+          
+    put:
+      tags: 
+      - ActivateUser
+      summary: Activate User Through Email
+      # Token returned should be encrypting the user email, so when token sent back from email click the decrypted should find the email used to register
+      description: Activate User Through Email 
+      responses:
+        204:
+          description: Success
+          schema:
+            $ref: '#/definitions/user'
+          headers:
+            Token:
+              description: Login Token Created
+              type: string
+        400:
+          description: Bad Request ( Invalid Activate Token )
+        500:
+          description: Server Fault
+      
+    get:
+      tags:
+        - GetUser
+      summary: Get User
+      description: Get User API
+      operationId: GetUser
+      security:
+        - JWT: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/user'
+        401:
+          description: Authentication Failed
+        500:
+          description: Server Vault
+  
+securityDefinitions:
+  JWT:
+    description: JWT API Token
+    type: apiKey
+    name: Authorization
+    in: "header"
+    
+definitions:
+  login:
+    type: object
+    required: 
+      - username
+      - password
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+        format: password
+  user:
+    type: object
+    required: 
+      - _id
+      - username
+    properties:
+      _id:
+        type: string
+      username:
+        type: string
+      avatar:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+  error:
+    type: object
+    required:
+      - field
+      - error
+    properties:
+      field:
+        type: string
+      error:
+        type: string

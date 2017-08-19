@@ -1,0 +1,75 @@
+swagger: '2.0'
+info:
+  description: Resources API
+  version: 1.0.0
+  title: Resources API
+host: 'localhost:8100'
+basePath: /
+tags:
+  - name: ResourcesAPI
+    description: Resource API
+schemes:
+  - http
+  - https
+paths:
+  /resource:
+    get:
+      tags:
+        - GetResource
+      summary: Get Resource
+      description: Get Resource API
+      operationId: GetResource
+      consumes:
+        - application/json
+      produces:
+        - image/jpeg
+      responses:
+        200:
+          description: Image as Binary Data
+          schema:
+            type: string
+            format: binary
+        404:
+          description: NotFound
+        500:
+          description: Server Vault
+          
+    post:
+      tags:
+        - CreateResource
+      summary: CreateResource
+      description: Create Resource API
+      operationId: CreateResource
+      consumes:
+        - multipart/form-data
+      produces: 
+        - application/json
+      parameters:
+        - in: formData
+          name: resource
+          type: file
+          required: false
+          description: The resource file to upload.
+        - in: formData
+          name: Meta
+          type: string
+          required: false
+          description: Description of file contents.
+          # https://swagger.io/docs/specification/file-upload/ - Multiple File Upload
+      responses:
+        201:
+          description: Success
+        404:
+          description: NotFound
+        500:
+          description: Server Vault
+  
+securityDefinitions:
+  JWT:
+    description: JWT API Token
+    type: apiKey
+    name: Authorization
+    in: "header"
+    
+security:
+  - JWT: []
